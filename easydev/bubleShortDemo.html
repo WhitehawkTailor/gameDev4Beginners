@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<!--
+Simple bubble short demo
+  2021-02-06
+  Author - Akos Szabo - aaszabo@gmail.com - www.axigen.hu
+  GitHub - WhitehawkTailor - https://github.com/WhitehawkTailor/gameDev4Beginners
+ 
+Creates a 2 dimensional array filled with colors randomly.
+Then runs bubble shorts on rows and coluns, while the array is fully shorted.
+Array is displayed in every cycle to see the changes.
+
+Color adn size can be changed via HTML form elements.
+
+-->
+
+<html>
+    <title>Simple buble short demo</title>
+    <meta charset="UTF-8">
+    <body style="text-align: center;">
+        <div style="display: table; margin: auto;">
+            <h3>Bubble short demo</h3>
+            <form id="setup">              
+            <label for="gray">gray</label>
+            <input type="radio" id="gray" name="color" value="gray" checked>
+            <label for="red">/ red</label>
+            <input type="radio" id="red" name="color" value="r">
+            <label for="green">/ green</label>
+            <input type="radio" id="green" name="color" value="g">
+            <label for="blue">/ blue</label>
+            <input type="radio" id="blue" name="color" value="b">
+                <button type="button" id="btn1" onClick="doIt()" >Start</button></br>
+                <label id="rangeId" for="myRange">50</label> <input type="range" min="20" max="100" value="50" class="slider" id="myRange" oninput='document.getElementById("rangeId").innerHTML=this.value;'>
+            </form>
+            <canvas id="myCanvas" width="400" height="400" style="background-color:white;"></canvas>
+          </div>
+        <script>
+
+/**
+ * Displays a dot with the given color on the given coordinates.
+ * The dot is a filled rectangle with the given plotSize
+ */
+function plot(argX, argY, argColor)
+{
+    c.fillStyle=argColor;
+    c.fillRect(argX, argY, plotSize, plotSize);
+}
+
+
+/**
+ * Visualize the 2D array that contains color values.
+ * 
+ */ 
+function displayArray()
+{
+    //console.log("cicdisplay:"+cicleCnt);
+    var i, j, rint;
+    for (i = 0; i < structSize; i++)
+    { 
+        for (j = 0; j < structSize; j++)
+        { 
+            rint = gfx[i][j];
+            if(colorStyle=="gray")
+                plot(i*plotSize, j*plotSize, 'rgb(' + (rint & 255) + ',' + (rint & 255) + ',' + (rint & 255) + ')');
+
+                if(colorStyle=="rgb")
+                plot(i*plotSize, j*plotSize, 'rgb(' + (rint >> 16) + ',' + (rint >> 8 & 255) + ',' + (rint & 255) + ')');
+
+            //red
+            if(colorStyle=="r")
+                plot(i*plotSize, j*plotSize, 'rgb(' + (rint>> 16) + ',0,0)');
+            //gree
+            if(colorStyle=="g")
+                plot(i*plotSize, j*plotSize, 'rgb(0,' + (rint>> 8 & 255) + ',0)');
+            //blue
+            if(colorStyle=="b")
+                plot(i*plotSize, j*plotSize, 'rgb(0,0' + ',' + (rint&255) + ')');
+        } 
+    } 
+    //progressbar
+    if(cicleCnt<structSize)
+    {
+        c.fillStyle="black";
+        c.fillRect(0,0,canv.width,4);
+        c.fillStyle="white";
+        c.fillRect(2,1,canv.width/structSize*cicleCnt,2);
+    }
+    //draw a frame
+    c.beginPath();
+    c.rect(0,0,canv.width, canv.height);
+    c.stroke();
+}//END of displayArray
+
+
+/**
+ * This is the compare function for the sort algorithm.
+ * It also replaces the elements if the comparision is true.
+ * It compares according to the selected color style for the program.
+ * @arg i and j coordinates of the two elements in the array.
+ */
+function compareAndReplace(argI1, argJ1, argI2, argJ2)
+{
+    var br1, br2, tmp;
+    if(colorStyle=="rgb")
+    { //(0.21 × R) + (0.72 × G) + (0.07 × B)
+        var rm = 0.33;//0.299;
+        var gm = 0.5;//0.7152;
+        var bm = 0.16;//0.072;
+        br1 = gfx[argI1][argJ1] >> 16 * rm + (gfx[argI1][argJ1] >> 8 & 255) * gm + (gfx[argI1][argJ1] & 255) * bm;
+        br2 = gfx[argI2][argJ2] >> 16 * rm + (gfx[argI2][argJ2] >> 8 & 255) * gm + (gfx[argI2][argJ2] & 255) * bm;
+    }
+    if(colorStyle=="gray")
+    {
+        br1 = gfx[argI1][argJ1] & 255;
+        br2 = gfx[argI2][argJ2] & 255;
+    }
+    if(colorStyle=="r")
+    {
+        br1 = gfx[argI1][argJ1] >> 16;
+        br2 = gfx[argI2][argJ2] >> 16;
+    }
+    if(colorStyle=="g")
+    {
+        br1 = gfx[argI1][argJ1] >> 8 & 255;
+        br2 = gfx[argI2][argJ2] >> 8 & 255;
+    }
+    if(colorStyle=="b")
+    {
+        br1 = gfx[argI1][argJ1] & 255;
+        br2 = gfx[argI2][argJ2] & 255;
+    }
+
+    if(br1<br2)
+    {
+        tmp=gfx[argI1][argJ1];
+        gfx[argI1][argJ1] = gfx[argI2][argJ2];
+        gfx[argI2][argJ2]=tmp;
+    }
+}//END of compareAndReplace
+
+
+/**
+ * This functions performs a buble short on the 2D array.
+ * It does a bubble short cycle on all the rows once, then on all the columns once.
+ * The idea of the buble short is to step through the array and
+ * compare the values to the next value. If reuired (bigger, or less) then change.
+ */
+function bubbleShort()
+{    
+    var tmp, br1, br2;
+    //vertical shorts
+    for (i = 0; i < structSize; i++)
+    { 
+        for (j = 0; j < structSize-1; j++)
+        { 
+            compareAndReplace(i,j,i,j+1);
+        } 
+        /*
+        for (j = structSize-1; j > 0; j--)
+        { 
+            compareAndReplace(i,j-1, i,j);
+        } 
+        */
+    }     
+
+    //horizontal shorts
+    for (j = 0; j < structSize; j++)
+    { 
+        for (i = 0; i < structSize-1; i++)    
+        { 
+            compareAndReplace(i,j,i+1,j);
+        } 
+        /*
+        for (i = structSize-1; i > 0; i--)    
+        { 
+            compareAndReplace(i-1,j,i,j);
+        } 
+        */        
+    } 
+
+}//END of bubbleShort
+
+/**
+ * This is the function makes the browser to call itself as many times
+ * as required to sort the 2D array.
+ * It runs one short cycle on the 2D array every time when the browser call this function.
+ */
+function doShort()
+{
+
+    //for(var cnt=structSize*structSize; cnt>1 ;cnt-- )
+    if(cicleCnt<structSize)
+    {
+        cicleCnt++;
+        bubbleShort();
+        displayArray();
+        //console.log("cicle:"+cicleCnt);
+        var myVar = setTimeout(doShort, cicleTime);
+    }
+    else
+    {
+        isRunning = 0;
+        console.log("Short demo END.");
+        btn.disabled=false;
+    }
+ 
+}//END of doShort()
+
+
+/**
+ * It is called by the Start button on the HTML page.
+ * 
+ * It creates a 2 dimensional array filled with colors randomly.
+ * Then runs bubble shorts on rows and coluns force and back, while the array is fully shorted.
+ * Array is displayed in every cycle to see the changes.
+ */ 
+function doIt()
+{
+    if(isRunning==1) return;
+    isRunning = 1;
+    cicleCnt=0;
+    structSize = Number(document.forms.setup.myRange.value);
+    plotSize = (canv.width>=canv.height?canv.height/structSize:canv.with/structSize);
+    cicleTime = (500-50) - ((500-50)/(structSizeMax)*structSize)+50;
+    console.log("cycle time:"+cicleTime);
+    if(cicleTime<25)cicleTime=25;
+
+    btn.disabled=true;
+    colorStyle = document.forms.setup.color.value;
+    console.log("doIt");
+    //clear the background
+    c.clearRect(0,0,canv.width, canv.height);
+
+    var i, j;
+    gfx = new Array(structSize); 
+    
+    //create the 1st dimension
+    for (i = 0; i < structSize; i++)
+    { 
+        gfx[i] = new Array(structSize);
+    } 
+
+    //create the second dimension
+    for (i = 0; i < structSize; i++)
+    { 
+        for (j = 0; j < structSize; j++)
+        { 
+            gfx[i][j] = Math.round(0xFFFFFF * Math.random());
+        } 
+    } 
+
+    //initiate short
+    fromX = 0;
+    toX = structSize;
+    fromY = 0;
+    toY = structSize;
+    doShort();
+
+}//END of doIt()
+
+
+//////////////////
+//// MAIN
+//////////////////
+//create the GFX
+var canv = document.getElementById("myCanvas"); 
+var c = canv.getContext("2d");
+//draw a frame for the canvas
+c.beginPath();
+c.rect(0,0,canv.width, canv.height);
+c.stroke();
+
+//GLOBAL VARIABLES
+var cicleTime;
+var isRunning =0;
+var btn = document.getElementById("btn1");
+var cicleCnt=0;
+var gfx; //for the global 2D array
+//calculate max and min size from the canvas size
+var structSizeMin = 10;
+var structSizeMax = (canv.width>=canv.height?canv.height/4:canv.with/4);
+var structSize = Math.round((structSizeMin+structSizeMax)/2);
+//set the slider accordingly
+document.forms.setup.myRange.min = structSizeMin;
+document.forms.setup.myRange.max = structSizeMax;
+document.forms.setup.myRange.value = structSize;
+structSize = Number(document.forms.setup.myRange.value);
+//plot size corresponds to the canvas size
+var plotSize = (canv.width>=canv.height?canv.height/structSize:canv.with/structSize);
+//get the color style from the HTML
+document.forms.setup.color.value="gray";
+var colorStyle = document.forms.setup.color.value;//"gray"; //rgb  r  g  b gray
+
+        </script>
+    </body>
+</html>

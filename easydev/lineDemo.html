@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!--
+Simple line demo
+  2021-02-06
+  Author - Akos Szabo - aaszabo@gmail.com - www.axigen.hu
+  GitHub - WhitehawkTailor - https://github.com/WhitehawkTailor/gameDev4Beginners
+ 
+This is a simple code example to play with lines.
+
+-->
+
+<html>
+    <title>Lines demo</title>
+    <meta charset="UTF-8">
+    <body style="text-align: center;">
+        <div style="display: table; margin: auto;">
+            <h3>Lines demo</h3>
+            <canvas id="myCanvas" width="400" height="400" style="background-color:white;"></canvas>
+          </div>
+        <script>
+/**
+ * Returns a random rgb color
+ */
+function getRndColor()
+{
+    var c=Math.round(0xFFFFFF * Math.random());
+    return 'rgb(' + (c >> 16) + ',' + (c >> 8 & 255) + ',' + (c & 255) + ')';
+}
+
+/**
+ * Draws a simple figure from lines
+ * Details and colors are changed cicle by cicle.
+ */ 
+function lines(argX, argY, argSize)
+{
+    if(step>50 || step<2)
+    {
+        dStep*=-1;      
+        colorCycle--;  
+        if(colorCycle==-3)colorCycle=2;        
+    }
+    step+=dStep;
+
+    var lMax = (canv.height>canv.width?canv.width/2:canv.height/2);    
+    var i,j;
+    var cx = canv.width/2;
+    var cy = canv.height/2;
+
+    c.clearRect(0,0,canv.width,canv.height);
+    
+
+    for(i=0, j=lMax; i< lMax; i+=step, j-=step)
+    {
+        //c.strokeStyle = getRndColor();//"black";//getRndColor();
+        if(colorCycle<0)
+            c.strokeStyle = "black";
+        else
+            c.strokeStyle = getRndColor();
+        c.beginPath();
+        //1st quarter
+        c.moveTo(cx+i,cy);
+        c.lineTo(cx,cy-j);
+        //2nd quarter
+        c.moveTo(cx-i,cy);
+        c.lineTo(cx,cy-j);
+        //3rd quarter
+        c.moveTo(cx+i,cy);
+        c.lineTo(cx,cy+j);
+        //4th quarter
+        c.moveTo(cx-i,cy);
+        c.lineTo(cx,cy+j);
+        c.stroke();
+    }
+
+    //draw the horizontal line
+    c.strokeStyle = "black";
+    c.beginPath();
+    c.moveTo(0,cy);
+    c.lineTo(2*cx,cy);
+    c.stroke();
+
+    //draw the frame
+    c.beginPath();
+    c.rect(0,0,canv.width, canv.height);
+    c.stroke();
+
+}//END of lines
+
+
+
+
+//////////////////
+//// MAIN
+//////////////////
+//create the GFX
+var canv = document.getElementById("myCanvas"); 
+var c = canv.getContext("2d");
+
+//GLOBAL VARIABLES
+var step=2;
+var dStep=1;
+var colorCycle=-1;
+
+//ask the browser to call the lines function in every 150ms
+var loop = setInterval(lines, 150);
+
+        </script>
+    </body>
+</html>

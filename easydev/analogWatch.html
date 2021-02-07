@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<!--
+Simple analog watch
+  2021-02-06
+  Author - Akos Szabo - aaszabo@gmail.com - www.axigen.hu
+  GitHub - WhitehawkTailor - https://github.com/WhitehawkTailor/gameDev4Beginners
+ 
+This is a simple code example to create an analog watch with pure java script.
+The display of th watch is responsive.
+It draws the maximum size watch that can be displayed on the canvas.
+Customizattion
+All the customizable elements are at the begining of tick() function.
+
+-->
+
+<html>
+
+<meta charset="UTF-8">
+
+    <title>Simple analog watch demo</title>
+    <body style="text-align: center;">
+        <div style="display: table; margin: auto;">
+            <canvas id="myCanvas" width="400" height="400" style="background-color:white;"></canvas>
+          </div>
+        <script>
+
+
+function tick()
+{
+    //set colors
+    var backgrounColor = "white";
+    var structureColor = "black";
+    var markColor = "black";
+    var markSmallColor = "grey";
+    var structureColor = "black";
+    var hourHandColor = "red";
+    var minuteHandColor = "blue";
+    var secondHandColor = "black";
+    var fontType = "Verdana";
+    var fontColor = "black";
+
+    //console.log("tick");
+    var curDate = new Date(); //get the current date and time
+    var h = curDate.getHours();
+    if(h>12)h=h-12;//make it a 12h clock
+    var m = curDate.getMinutes();    
+    var s = curDate.getSeconds();
+    //calculate the maximum radius of the watch
+    var r=(canv.width>=canv.height?canv.height/2:canv.width/2);
+    var l=1; //an auxiliary variable
+    //console.log("time:"+h+":"+m+":"+s);
+    c.font = (r/6)+"px "+fontType;//set fontsize derived from the size
+    c.fillStyle = "black"; 
+    c.fillText(h+":"+m+":"+s, 0, 25);  
+    //add the plus degree because of minutes
+    h+=(m/60);
+    //GFX
+    //clear the background
+    c.fillStyle=backgrounColor;
+    c.clearRect(0,0,canv.width, canv.height);
+    //circle
+    c.beginPath();
+    c.strokeStyle = structureColor;
+    c.lineWidth = 1;
+	c.arc(canv.width / 2, canv.height/2, r, 0, 2*Math.PI);
+    c.stroke();
+    //inbetween marks
+    for(var i=0, ds=0;i<Math.PI*2;i+=Math.PI/30, ds++)
+    {
+        l=(ds%5!=0?r/6:r/6+10)
+        if(ds%5!=0)//most of the marks
+        {
+            l=r/6;
+            c.strokeStyle = markSmallColor;
+            c.lineWidth = 1;
+        }
+        else // 5 minutes marks
+        {
+
+            l=r/6+10;
+            c.strokeStyle = markColor;
+            c.lineWidth = 3;    
+        }
+        //draw marks
+        c.beginPath(); 
+        c.moveTo(canv.width/2+Math.cos(i)*(r-l), canv.height/2+Math.sin(i)*(r-l))
+        c.lineTo(canv.width/2+Math.cos(i)*r, canv.height/2+Math.sin(i)*r);
+        c.stroke();
+    }//end of for
+
+    l=r/6+10;//keep l for further calculation
+    //four numbers 12, 3, 6, 9 - use l, r to positioning numbers
+    c.font = (r/6)+"px "+fontType;//font size depends on the size of the watch
+    c.fillStyle = fontColor; 
+    c.fillText("12", canv.width/2-c.measureText("12").width/2, canv.height/2-r+l+(r/6));    
+    c.fillText("3", canv.width-l-c.measureText("3").width, canv.height/2+(r/6*0.4));    
+    c.fillText("6", canv.width/2-c.measureText("6").width/2, canv.height/2+r-l-1);    
+    c.fillText("9", l, canv.height/2+(r/6*0.4));    
+    //hands are rotated, because of the coordinate system in JS
+    //hour hand
+    c.strokeStyle = 'red';
+    c.lineWidth = 5;
+    c.beginPath(); 
+    c.moveTo(canv.width/2, canv.height/2);
+    c.lineTo(canv.width/2+Math.cos(Math.PI*2/12*(h-3))*r*0.6, canv.height/2+Math.sin(Math.PI*2/12*(h-3))*r*0.6);
+    c.stroke();
+    //mnute hand
+    c.strokeStyle = 'blue';
+    c.lineWidth = 3;
+    c.beginPath(); 
+    c.moveTo(canv.width/2, canv.height/2);
+    c.lineTo(canv.width/2+Math.cos(Math.PI/30*(m-15))*r*0.8, canv.height/2+Math.sin(Math.PI/30*(m-15))*r*0.8);
+    c.stroke();
+    //second hand
+    c.strokeStyle = 'black';
+    c.lineWidth = 1;
+    c.beginPath(); 
+    c.moveTo(canv.width/2, canv.height/2);
+    c.lineTo(canv.width/2+Math.cos(Math.PI/30*(s-15))*r*0.8, canv.height/2+Math.sin(Math.PI/30*(s-15))*r*0.8);
+    c.stroke();
+    //console.log("tack");
+}//END of tick()
+
+var canv = document.getElementById("myCanvas"); 
+var c = canv.getContext("2d");
+//make the browser to call tick() in every second
+var watch = setInterval(tick, 1000);
+        </script>
+    </body>
+</html>

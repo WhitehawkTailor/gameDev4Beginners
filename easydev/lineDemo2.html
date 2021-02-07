@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!--
+Simple line demo
+  2021-02-06
+  Author - Akos Szabo - aaszabo@gmail.com - www.axigen.hu
+  GitHub - WhitehawkTailor - https://github.com/WhitehawkTailor/gameDev4Beginners
+ 
+This is a simple code example to draw random lines.
+
+-->
+
+<html>
+    <title>Line demo 2</title>
+    <meta charset="UTF-8">
+    <body style="text-align: center;">
+        <div style="display: table; margin: auto;">
+            <h3>Line demo 2</h3>
+            <canvas id="myCanvas" width="400" height="400" style="background-color:white;"></canvas>
+          </div>
+        <script>
+/**
+ * Returns a random rgb color
+ */
+function getRndColor()
+{
+    var c=Math.round(0xFFFFFF * Math.random());
+    return 'rgb(' + (c >> 16) + ',' + (c >> 8 & 255) + ',' + (c & 255) + ')';
+}
+
+/**
+ * Draws random lines with random color
+ */ 
+function lines()
+{
+    //draw the frame
+    c.beginPath();
+    c.rect(0,0,canv.width, canv.height);
+    c.stroke();
+
+    for(i=0;i<100;i++)//100 random lines with random color
+    {
+    c.strokeStyle = getRndColor();
+    c.beginPath();
+    c.moveTo(Math.round(Math.random()*canv.width),Math.round(Math.random()*canv.height));
+    c.lineTo(Math.round(Math.random()*canv.width),Math.round(Math.random()*canv.height));
+    c.stroke();
+    }
+
+}//END of lines
+
+
+
+
+//////////////////
+//// MAIN
+//////////////////
+//create the GFX
+var canv = document.getElementById("myCanvas"); 
+var c = canv.getContext("2d");
+
+//GLOBAL VARIABLES
+//ask the browser to call the lines function in every 150ms
+var loop = setInterval(lines, 150);
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<!--
+Simple circle demo
+  2021-02-06
+  Author - Akos Szabo - aaszabo@gmail.com - www.axigen.hu
+  GitHub - WhitehawkTailor - https://github.com/WhitehawkTailor/gameDev4Beginners
+ 
+This is a simple code example to play with circles.
+
+-->
+
+<html>
+    <title>Lines demo</title>
+    <meta charset="UTF-8">
+    <body style="text-align: center;">
+        <div style="display: table; margin: auto;">
+            <h3>Circle demo</h3>
+            <canvas id="myCanvas" width="400" height="400" style="background-color:white;"></canvas>
+          </div>
+        <script>
+/**
+ * Returns a random rgb color
+ */
+function getRndColor()
+{
+    var c=Math.round(0xFFFFFF * Math.random());
+    return 'rgb(' + (c >> 16) + ',' + (c >> 8 & 255) + ',' + (c & 255) + ')';
+}
+
+
+/**
+ * Draw a circle
+ * @arg argX, argY the center point coordinates
+ * @arg argR as radius
+ * @arg argColor for draw color
+ */
+function circle(argX, argY, argR, argColor)
+{
+	c.beginPath();
+	c.strokeStyle = argColor;
+	c.arc(argX, argY, argR, 0, 2*Math.PI);
+	c.stroke();
+}
+
+
+/**
+ * Draws two set of circles with the same center and different radius
+ * Change the center position of the circle sets
+ * Also, change the color style between black and colorfull
+ */ 
+function circles()
+{
+    c.clearRect(0,0,canv.width,canv.height);
+    var i;
+    if(colorStyle==1)
+    {
+        for(i=0;i<canv.width;i+=step)
+        {
+            circle(x1,y1,i,"black");
+            circle(x2,y2,i,"black");
+        }
+    }
+    else
+    {
+        for(i=0;i<canv.width;i+=step)
+        {
+            circle(x1,y1,i,getRndColor());
+            circle(x2,y2,i,getRndColor());
+        }
+
+    }
+    //draw a frame
+    c.strokeStyle = "black";
+    c.beginPath();
+    c.rect(0,0,canv.width, canv.height);
+    c.stroke();
+
+    //make movement, scale change and color setup change
+    x1+=5;
+    x2-=5;
+    if(x1>canv.width)
+    {
+        x1=0;
+        x2 = canv.width;
+        step+=4;
+        if(step>20)
+        {
+            step=4;
+            colorStyle*=-1;
+        }
+    }
+
+
+}//END of circles
+
+//////////////////
+//// MAIN
+//////////////////
+//create the GFX
+var canv = document.getElementById("myCanvas"); 
+var c = canv.getContext("2d");
+
+//GLOBAL VARIABLES
+var x1=0, y1=canv.height/2, x2=canv.width, y2=canv.height/2;
+var step=4;
+var colorStyle=1;
+
+//ask the browser to call the function in every 150ms
+var loop = setInterval(circles, 50);
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<!--
+Simple line demo
+  2021-02-06
+  Author - Akos Szabo - aaszabo@gmail.com - www.axigen.hu
+  GitHub - WhitehawkTailor - https://github.com/WhitehawkTailor/gameDev4Beginners
+ 
+This is a simple code example to calculete bouncing points.
+
+-->
+
+<html>
+    <title>Connect bouncing points</title>
+    <meta charset="UTF-8">
+    <body style="text-align: center;">
+        <div style="display: table; margin: auto;">
+            <h3>Connect bouncing points</h3>
+            <form id="setup" onchange="doFormChange();">            
+                <label for="net">frame</label>
+                <input type="radio" id="net" name="type" onchane="doStyleChange();" value="0" checked>
+                <label for="web">/ web</label>
+                <input type="radio" id="web" name="type" value="1"></br>
+                <label style="font-size:40px" id="rangeId" for="myRange">4</label> <input type="range" min="2" max="10" value="4" class="slider" id="myRange" onchange="doRangeChange();" oninput='document.getElementById("rangeId").innerHTML=this.value;'>
+            </form>
+            <canvas id="myCanvas" width="400" height="400" style="background-color:white;"></canvas>
+          </div>
+        <script>
+/**
+ * Returns a random rgb color
+ */
+function getRndColor()
+{
+    var c=Math.round(0xFFFFFF * Math.random());
+    return 'rgb(' + (c >> 16) + ',' + (c >> 8 & 255) + ',' + (c & 255) + ')';
+}
+
+/**
+ * This is called when the form is changed.
+ * But this handles radiobutton change only
+ */
+function doFormChange()
+{
+    doStyle = Number(document.forms.setup.type.value);
+}
+
+/**
+ * Called when the HTML slider is moved
+ */
+function doRangeChange()
+{
+    //gets the current value of the slider
+    doInit = Number(document.forms.setup.myRange.value);
+}
+
+
+/**
+ * Draw random colored line between the given two point object
+ */
+function connect( argP1, argP2)
+{
+    c.strokeStyle = getRndColor();
+    c.beginPath();
+    c.moveTo(argP1.x,argP1.y);
+    c.lineTo(argP2.x,argP2.y);
+    c.stroke();
+}
+
+
+/**
+ * Calculates movement and bouncing on all the points
+ */
+function calculate()
+{
+    //take all the points from the array
+    //calculate the movement and check bouncing on each point
+    for(var i=0;i<points.length;i++)
+    {
+        //move points
+        points[i].x+=points[i].dx;
+        points[i].y+=points[i].dy;
+
+        //check if hits the wall and do bouncing
+        if(points[i].x<0 && points[i].dx<0)
+        {          
+            points[i].dx*=-1;           
+        }
+
+        if(points[i].y<0 && points[i].dy<0)
+        {          
+            points[i].dy*=-1; 
+        }
+
+        if(points[i].x>canv.width && points[i].dx>0)
+        {
+            points[i].dx*=-1; 
+        }
+
+        if(points[i].y>canv.height && points[i].dy>0)
+        {
+            points[i].dy*=-1; 
+        }
+    }//end of for
+}//END of calculate()
+
+
+/**
+ * Called by the browser cyclicli
+ * Calculate and draw
+ */ 
+function gameLoop()
+{
+    var i;//make it locally global so it has value after for cycle
+
+    //if slider changed on HTML, then lets do init
+    if(doInit>0)
+    {
+        init(doInit);
+        doInit=0;
+    }
+
+    //CALCULATE
+    calculate();//calculate movement and bouncing
+
+    //DRAW
+    //clear the canvas
+    c.clearRect(0,0,canv.width, canv.height);
+
+    //draw based on the selected style
+    if(doStyle==0)//draw line between points
+    {
+        for(i=0;i<points.length-1;i++)//not the best way to calculate in condition
+        {
+            connect(points[i], points[i+1]);
+        }
+        connect(points[i], points[0]);//connect the last one to the first
+    }
+    else//connect all points to all points
+    {        
+        for(i=0;i<points.length-1;i++)//not the best way to calculate in condition
+        {
+            for(var k=i; k<points.length; k++)
+            connect(points[i], points[k]);
+        }
+    }
+
+    //draw the frame
+    c.beginPath();
+    c.strokeStyle = "black";
+    c.rect(0,0,canv.width, canv.height);
+    c.stroke();
+
+}//END of gameLoop
+
+
+/**
+ * Initiates the array with the argument number of random points
+ */
+function init(argInit)
+{
+    points = Array(argInit);//create new array
+    for(var i=0;i<points.length;i++) //fill it up random points
+    {
+        points[i] = { 
+            x:10+Math.round(Math.random()*(canv.width-20)),
+            y:10+Math.round(Math.random()*(canv.height-20)),
+            dx:Math.round(Math.random()*(10))-5,
+            dy:Math.round(Math.random()*(10))-5
+        };
+    }
+}
+
+
+//////////////////
+//// MAIN
+//////////////////
+//GLOBAL VARIABLES
+//create the GFX
+var canv = document.getElementById("myCanvas"); 
+var c = canv.getContext("2d");
+var points;
+var doInit=4;
+var doStyle = 0;
+document.forms.setup.myRange.value = doInit;//set HTML slider value
+document.forms.setup.type.value = doStyle; //set HTML radio button
+
+//ask the browser to keep calling the gameLoop
+var loop = setInterval(gameLoop, 50);
+
+        </script>
+    </body>
+</html>
