@@ -1,0 +1,15 @@
+<svg version="1.1" width="24.376468658447266" height="51.526123046875" viewBox="-0.5149304866790771 -0.48308031260967255 24.376468658447266 51.526123046875" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <linearGradient id="grad_1" y2="1" x2="0">
+      <stop offset="0" stop-color="#7F7F7F" stop-opacity="1"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="1"/>
+    </linearGradient>
+  <linearGradient id="grad_1-,0,0,1,10.5,12.95" y2="50.543" x2="-0.0149" x1="-0.0149" y1="0.0169" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7F7F7F" stop-opacity="1"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="1"/>
+    </linearGradient></defs>
+  <!-- Exported by Scratch - http://scratch.mit.edu/ -->
+  <g id="ID0.8012767513282597">
+    <path id="ID0.41810334334149957" fill="url(#grad_1-,0,0,1,10.5,12.95)" stroke="none" d="M 21.7 10.65 C 22.9 14.05 23.45 16.7 23.35 18.6 L 23.25 26.15 C 23.25 31.683 22.617 36.633 21.35 41 C 20.05 45.367 17.45 48.367 13.55 50 C 9.617 51.633 6.333 49.583 3.7 43.85 C 1.067 38.117 -0.167 33.067 0 28.7 C 0.167 24.333 0.467 21 0.9 18.7 L 2.45 11.1 C 3.083 8.333 4.217 5.967 5.85 4 C 7.45 2 9.033 0.733 10.6 0.2 C 12.133 -0.367 14.067 0.383 16.4 2.45 C 18.733 4.483 20.5 7.217 21.7 10.65 " stroke-width="1"/>
+  </g>
+</svg>

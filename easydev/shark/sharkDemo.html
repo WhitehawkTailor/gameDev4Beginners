@@ -1,0 +1,222 @@
+<!--
+  2021-02-06
+  Author - Akos Szabo - aaszabo@gmail.com - www.axigen.hu
+  GitHub - WhitehawkTailor - https://github.com/WhitehawkTailor/gameDev4Beginners
+ 
+Simple graphics demo using many pictures to fake 3D rendering
+GFX was stolen from a scratch program: https://scratch.mit.edu/projects/39220780/
+But it used a stolen GFX too from http://www.sharkbreak.com/index.html
+
+This scratch sprite is a zipped file that contains multiple svg files as layers.
+The sprite has a json descriptor file that tells the order of the images and
+the center point of the images.
+-->
+
+
+
+<html>
+    <title>Shark demo</title>
+    <meta charset="UTF-8">
+    <body onresize="myResize()" style="text-align: center;background-color:black;">
+        <canvas id="myCanvas" width=100% height=100% style="background-color:white;"></canvas>
+        <script>
+
+///////////////////
+/// EVENT HANDLER
+///////////////////
+
+/**
+ * Event handler for mouseover
+ */
+function doMove(e)
+{	
+	target.x=e.offsetX;
+    target.y=e.offsetY-35;
+    target.status=1;
+}
+
+
+/**
+ * If window is resized then resize the canvas to the maximum
+ * and send sharky to the center
+ * 
+ */
+function myResize()
+{
+    w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    canv.width=Math.round(w*0.98);
+    canv.height=Math.round(h*0.95);
+    //set the active target to the center 
+	target.x=canv.width/2;
+    target.y=canv.height/2;
+    target.status=1;
+}
+
+/////////////////////
+// FUNCTIONS
+////////////////////
+
+/**
+ * Calculate the movement for each layer of the sharky to catch the target
+ * 
+ */
+function calculate()
+{
+    var dx, dy, dis, disCnt=0, disMax=20, disMod;
+    //calculate each layer
+    for(var i=0, j=pics.length-1; i<pics.length; i++, j--)
+    {
+        if(i!=0)
+        {
+            //measure the distance from the former slide midle point
+            dx = (pics[j+1].x+pics[j+1].rx)-(pics[j].x+pics[j].rx);
+            dy = (pics[j+1].y+pics[j+1].ry)-(pics[j].y+pics[j].ry);
+        }
+        else //distance of the first one measured from the target
+        {
+            dx = target.x-(pics[j].x+pics[j].rx);
+            dy = target.y-(pics[j].y+pics[j].ry);
+        }
+        
+        //calculate distance
+        dis=Math.sqrt(dx*dx+dy*dy);
+        disMod=disMax/dis;//calculate speed maximator
+        //if distance less then 3 just step there
+        if(dis<3)
+        {
+            pics[j].x+=dx;
+            pics[j].y+=dy;
+            disCnt++;
+            if(disCnt==pics.length)target.status=0;
+        }
+        else //else
+        {
+            if(dis<30)//if distance less than 40 use half of the 
+            {
+                pics[j].x+=dx/2;
+                pics[j].y+=dy/2;
+            }
+            else
+            {
+                pics[j].x+=dx*disMod;
+                pics[j].y+=dy*disMod;
+            }
+        }
+    }//end of for
+}//END of calculate
+
+/**
+ * Main loop called by the browser in every 25ms
+ */
+function gameLoop()
+{
+    if(!isLoaded)return;
+
+    //CALCULATE
+    if(target.status==1)
+    {
+        calculate();
+    }
+
+    c.fillStyle="black";
+    c.fillRect(0,0,canv.width, canv.height);
+    for(var i=0;i<pics.length; i++)
+    {
+        c.drawImage(pics[i].img,pics[i].x, pics[i].y);
+    }
+
+    c.font = "30px Verdana";
+    c.fillStyle = "white"; 
+    c.fillText("Shark demo", canv.width/2-c.measureText("Shark demo").width/2, 25);
+}//END of gameLoop
+
+
+/**
+ * Creates the shark from pieces
+ */
+ function init()
+{
+    console.log("init");
+    pics = Array(32);//create new array for 32 pics
+    console.log("size:"+pics.length);
+    for(var i=0, j=pics.length, k=j-1; i<pics.length; i++, j--, k--)
+    {
+        
+        pics[i] = {
+            img:new Image(),
+            x:canv.width/2 -rotation[k*2],
+            y:canv.height/2-rotation[k*2+1],
+            rx:rotation[k*2],
+            ry:rotation[k*2+1],
+            id:j-1
+        };
+        //create the filenames
+        pics[i].img.src="pic/"+(j<10?"0"+j:j)+".svg";
+        addMedia( pics[i].img );
+        console.log(i+":"+pics[i].img.src);
+    }
+}//END of init
+
+
+
+///////////////////////////
+////// MEDIA LOADER
+/////////////////////////
+var mediaCount = {image:0, audio:0};
+function addMedia( argMedia )
+  {    
+    mediaCount.image++;
+    argMedia.onload = function(){countOnload();};
+    console.log("add count image:"+mediaCount.image+" audio:"+mediaCount.audio);
+  }
+
+/**
+   * This is called every time when a media is loaded
+   * This counts the loaded media and calls the start game,
+   * when all registered media are loaded in.
+   */
+var isLoaded = false;
+function countOnload(argMedia)
+{
+    mediaCount.image--;
+    
+    console.log("loaded image:"+mediaCount.image);
+
+    if(mediaCount.image == 0)
+    {        
+        isLoaded=true;
+    }
+}//END of countOnload
+
+
+////////////////
+///// MAIN
+////////////////
+
+//GLOBAL VARIABLES
+var w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+var h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+var canv = document.getElementById("myCanvas"); 
+canv.width=Math.round(w*0.98);
+canv.height=Math.round(h*0.95);
+var c = canv.getContext("2d");//gfx object for drawing
+canv.onmousemove = doMove;  //mouse over event on the canvas - this is only the canvas
+var pics;//array for picture slices
+
+//the information on the middle point of slides
+var rotation = [40,12,49,24,55,37,59,45,67,51,72,57,93,61,126,66,159,74,
+    200,82,75,119,72,154,68,193,65,227,61,57,62,54,65,50,73,49,40,44,36,44,
+    26,36,18,27,13,24,11,25,13,35,11,53,11,70,12,82,10,94,11,104,10,113,9,121];
+//target point to catch    
+var target = {x:0, y:0, status:0};
+
+//call the init to create the slides and load the images in
+init();
+//ask the browser to call the gameLoop every 25ms
+var loop = setInterval(gameLoop, 25);
+
+</script>
+</body>
+</html>
+
