@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<!--
+Simple dots demo
+  2021-02-06
+  Author - Akos Szabo - aaszabo@gmail.com - www.axigen.hu
+  GitHub - WhitehawkTailor - https://github.com/WhitehawkTailor/gameDev4Beginners
+ 
+This is a simple code example to calculete bouncing dots.
+Graphical parameters can be controled by HTML elements.
+
+-->
+
+<html>
+    <title>Bouncing dots</title>
+    <meta charset="UTF-8">
+    <body style="text-align: center;">
+        <div style="display: table; margin: auto;">
+            <h3>Bouncing dots</h3>
+            <form id="setup" onchange="doFormChange();">            
+                <label for="white">white</label>
+                <input type="radio" id="white" name="bckg" onchane="doStyleChange();" value="0" checked>
+                <label for="web">/ black</label>
+                <input type="radio" id="black" name="bckg" value="1"></br>
+                <label style="font-size:40px">Opacity</label>
+                    <input type="range" min="10" max="100" value="25" class="slider" id="myOpacity" onchange="doOpacityChange();" ></br>
+                <label style="font-size:40px">Size</label>
+                    <input type="range" min="10" max="100" value="25" class="slider" id="mySize" onchange="doSizeChange();" ></br>
+                <label style="font-size:40px" id="amountId" for="myAmount">4</label>
+                    <input type="range" min="1" max="100" value="25" class="slider" id="myAmount" onchange="doAmountChange();" oninput='document.getElementById("amountId").innerHTML=this.value;'>
+            </form>
+            <canvas id="myCanvas" width="400" height="400" style="background-color:white;"></canvas>
+          </div>
+        <script>
+
+/////////////////////
+///// EVENT HANDLERS
+/////////////////////
+
+
+/**
+ * This is called when the form is changed.
+ * But this handles radiobutton change only
+ */
+function doFormChange()
+{
+    doStyle = Number(document.forms.setup.bckg.value);
+}
+
+/**
+ * Called when the HTML slider is moved for amount
+ */
+function doAmountChange()
+{
+    //gets the current value of the slider
+    curAmount = Number(document.forms.setup.myAmount.value);
+    doInit = true;
+}
+
+/**
+ * Called when the HTML slider is moved for Size
+ */
+function doSizeChange()
+{
+    //gets the current value of the slider
+    curSize = Number(document.forms.setup.mySize.value);
+    doInit = true;
+}
+
+function replaceOpacity(argColor, argOpacity)
+{
+    return argColor.substring(0,argColor.lastIndexOf(",")+1)+""+argOpacity+")";
+} 
+
+/**
+ * Called when the HTML slider is moved for Opacity
+ */
+ function doOpacityChange()
+{
+    //gets the current value of the slider    
+    opacity = Number(document.forms.setup.myOpacity.value)/100;    
+    for(var i=0;i<dots.length;i++) //fill it up random dots
+    {
+        dots[i].color=replaceOpacity(dots[i].color, opacity);
+    }
+}
+
+/////////////////////
+///// FUNCTIONS
+/////////////////////
+
+
+/**
+ * Returns a random rgb color
+ */
+ function getRndColorWithOpacity(argOpacity)
+{
+    var c=Math.round(0xFFFFFF * Math.random());
+    return 'rgba(' + (c >> 16) + ',' + (c >> 8 & 255) + ',' + (c & 255) + ',' + argOpacity+ ' )';
+}
+
+
+function fillCircle(argCircle)
+{
+	c.beginPath();
+    c.fillStyle = argCircle.color;//'rgba(255,255,255,0.1)';
+	c.arc(argCircle.x, argCircle.y, argCircle.r, 0, 2*Math.PI);
+    c.fill();
+}
+
+
+/**
+ * Calculates movement and bouncing on all the dots
+ */
+function calculate()
+{
+    //take all the dots from the array
+    //calculate the movement and check bouncing on each point
+    for(var i=0;i<dots.length;i++)
+    {
+        //move dots
+        dots[i].x+=dots[i].dx;
+        dots[i].y+=dots[i].dy;
+
+        //check if hits the wall and do bouncing
+        if(dots[i].x<dots[i].r && dots[i].dx<0)
+        {          
+            dots[i].dx*=-1;           
+        }
+
+        if(dots[i].y<dots[i].r && dots[i].dy<0)
+        {          
+            dots[i].dy*=-1; 
+        }
+
+        if(dots[i].x>canv.width-dots[i].r && dots[i].dx>0)
+        {
+            dots[i].dx*=-1; 
+        }
+
+        if(dots[i].y>canv.height-dots[i].r && dots[i].dy>0)
+        {
+            dots[i].dy*=-1; 
+        }
+    }//end of for
+}//END of calculate()
+
+/**
+ * gets all the dots from the array and paint it to the canvas
+ */
+function drawCircles()
+{
+    for(var i=0;i<dots.length;i++)
+    {
+        fillCircle(dots[i]);
+    }
+}
+
+/**
+ * Called by the browser cyclicli
+ * Calculate and draw
+ */ 
+function gameLoop()
+{
+    var i;//make it locally global so it has value after for cycle
+
+    //if any change were initiated from HTML, then lets do init
+    if(doInit)
+    {
+        init();
+        doInit=false;
+    }
+    else
+    {
+        //CALCULATE
+        calculate();//calculate movement and bouncing
+    }
+
+    //DRAW
+    if(doStyle==0)
+    {
+        //clear the canvas
+        c.clearRect(0,0,canv.width, canv.height);
+    }
+    else
+    {
+        c.fillStyle="black";
+        c.fillRect(0,0,canv.width, canv.height);
+    }
+
+    drawCircles();
+
+    //draw the frame
+    c.beginPath();
+    c.strokeStyle = "black";
+    c.rect(0,0,canv.width, canv.height);
+    c.stroke();
+
+}//END of gameLoop
+
+
+/**
+ * Initiates the array with the argument number of random dots
+ */
+function init()
+{
+    dots = Array(curAmount);//create new array
+    for(var i=0;i<dots.length;i++) //fill it up with random dots
+    {
+        dots[i] = { 
+            x:0,
+            y:0,
+            r:Math.round(Math.random()*(curSize-minSize))+minSize,
+            dx:Math.round(Math.random()*(2*maxSpeed))-maxSpeed,
+            dy:Math.round(Math.random()*(2*maxSpeed))-maxSpeed,
+            color:getRndColorWithOpacity(opacity)
+        };
+        dots[i].x=dots[i].r+Math.round(Math.random()*(canv.width-2*dots[i].r));
+        dots[i].y=dots[i].r+Math.round(Math.random()*(canv.height-2*dots[i].r));       
+    }
+}
+
+
+//////////////////
+//// MAIN
+//////////////////
+//GLOBAL VARIABLES
+//create the GFX
+var canv = document.getElementById("myCanvas"); 
+var c = canv.getContext("2d");//gfx object for drawing
+var dots; //array to store dots
+var doStyle = 0;
+var minSize = 10;
+var maxSize=100;
+var curSize=40;
+var maxSpeed = 10;
+var minAmount = 1;
+var maxAmount = 100;
+var curAmount =25;
+var opacity = 0.3;
+var doInit = true;
+
+//set the default value for HTMl input elements
+document.forms.setup.bckg.value = doStyle; //set HTML radio button
+//Slider for amount
+document.forms.setup.myAmount.min = minAmount;
+document.forms.setup.myAmount.max = maxAmount;
+document.forms.setup.myAmount.value = curAmount;
+//amount label
+document.getElementById("amountId").innerHTML=curAmount;
+//slider for size
+document.forms.setup.mySize.min = minSize;
+document.forms.setup.mySize.max = maxSize;
+document.forms.setup.mySize.value = curSize;
+//slider for opacity
+document.forms.setup.myOpacity.min=10;
+document.forms.setup.myOpacity.max=100;
+document.forms.setup.myOpacity.value = Math.round(opacity*10);
+
+//ask the browser to keep calling the gameLoop
+var loop = setInterval(gameLoop, 50);
+
+        </script>
+    </body>
+</html>
