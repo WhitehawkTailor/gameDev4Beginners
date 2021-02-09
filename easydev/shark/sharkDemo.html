@@ -29,10 +29,11 @@ the center point of the images.
  * Event handler for mouseover
  */
 function doMove(e)
-{	
+{	//set the target
 	target.x=e.offsetX;
-    target.y=e.offsetY-35;
-    target.status=1;
+    target.y=e.offsetY-35;//make it to the jaws
+    target.status=1;//make sharky to catch the mouse
+    timeCount=0;//stop bouncing
 }
 
 
@@ -50,7 +51,8 @@ function myResize()
     //set the active target to the center 
 	target.x=canv.width/2;
     target.y=canv.height/2;
-    target.status=1;
+    target.status=1;//make sharky to catch the mouse
+    timeCount=0;//stop bouncing
 }
 
 /////////////////////
@@ -107,11 +109,38 @@ function calculate()
 }//END of calculate
 
 /**
+ * Bouncing left and right with value of a sin to make it realistic
+ * Called in every frame while bouncing needed.
+ * Bouncing stops when mouse is moved.
+ */
+function bouncing()
+{    
+    target.status=1;
+    var dx = timeCount%100;    
+    target.x+=Math.round(13*Math.sin(dx*Math.PI*2/100));
+}
+
+
+/**
  * Main loop called by the browser in every 25ms
  */
 function gameLoop()
 {
-    if(!isLoaded)return;
+    if(!isLoaded)return;    
+    //Bouncing effect if does nothing too much time
+    timeCount++;
+    if(timeCount == timeWait)//set bouncing effect
+    {
+        //send sharky to the mddle of the screen
+        target.x=canv.width/2; 
+        target.y=canv.height/2;
+        timeCount+=25;
+    }
+
+    if(timeCount > timeWait)//do bouncing
+    {
+        bouncing();
+    }
 
     //CALCULATE
     if(target.status==1)
@@ -136,10 +165,9 @@ function gameLoop()
  * Creates the shark from pieces
  */
  function init()
-{
-    console.log("init");
+{   
     pics = Array(32);//create new array for 32 pics
-    console.log("size:"+pics.length);
+    //console.log("size:"+pics.length);
     for(var i=0, j=pics.length, k=j-1; i<pics.length; i++, j--, k--)
     {
         
@@ -154,7 +182,7 @@ function gameLoop()
         //create the filenames
         pics[i].img.src="pic/"+(j<10?"0"+j:j)+".svg";
         addMedia( pics[i].img );
-        console.log(i+":"+pics[i].img.src);
+        //console.log(i+":"+pics[i].img.src);
     }
 }//END of init
 
@@ -168,7 +196,7 @@ function addMedia( argMedia )
   {    
     mediaCount.image++;
     argMedia.onload = function(){countOnload();};
-    console.log("add count image:"+mediaCount.image+" audio:"+mediaCount.audio);
+    //console.log("add count image:"+mediaCount.image+" audio:"+mediaCount.audio);
   }
 
 /**
@@ -181,7 +209,7 @@ function countOnload(argMedia)
 {
     mediaCount.image--;
     
-    console.log("loaded image:"+mediaCount.image);
+    //console.log("loaded image:"+mediaCount.image);
 
     if(mediaCount.image == 0)
     {        
@@ -210,7 +238,8 @@ var rotation = [40,12,49,24,55,37,59,45,67,51,72,57,93,61,126,66,159,74,
     26,36,18,27,13,24,11,25,13,35,11,53,11,70,12,82,10,94,11,104,10,113,9,121];
 //target point to catch    
 var target = {x:0, y:0, status:0};
-
+var timeCount = 0;
+var timeWait = 200;//multiple of 100
 //call the init to create the slides and load the images in
 init();
 //ask the browser to call the gameLoop every 25ms
