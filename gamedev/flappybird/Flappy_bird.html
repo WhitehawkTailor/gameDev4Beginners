@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+<title>My FlappyBird game</title>
+<meta charset="UTF-8">
+<style>
+  #boxes {
+    content: "";
+    display: table;
+    clear: both;
+  }
+  div {
+    float: left;
+    height: 470px;   
+    padding: 0 10px;
+  }
+  #column1 {
+    background-color: #000000;
+    color: #ffffff;
+    text-align: right;
+    width: 25%;
+    padding: 70px 10px;
+  }
+  
+  #column2 {
+    background-color: #000000;
+    color: #ffffff;
+    width: 400px;
+  }
+  #column3 {
+    background-color: #000000;
+    color: #ffffff;
+    width: 33%;
+    text-align: center;
+    padding: 0px 50px;
+  }
+  ul {
+    text-align: left;
+    font-size:x-large;
+  }
+  
+  h2 {
+    color: #ffffff;
+    text-align: center;
+  }
+
+  h3 {
+    color: #ffffff;
+    text-align: right;
+    padding: 0px 10px;
+    margin: 6px 10px;
+  }
+</style>
+<body style="background: black; text-align: center;">
+  <div id="column1">
+  <form id="setup">
+    <h3 style="text-align: right; color: #ffffff;">Sound</h3>
+    <label for="off">Off</label>
+    <input type="radio" id="off" name="sound" value=0 checked="checked">
+    <label for="on">On</label>
+    <input type="radio" id="on" name="sound" value=1><br>    
+
+    <h3 style="text-align: right; color: #ffffff;">Collision effect</h3>
+    <label for="off">Off</label>
+    <input type="radio" id="off" name="collision" value=0 checked="checked">
+    <label for="on">On</label>
+    <input type="radio" id="on" name="collision" value=1><br>    
+
+    <h3 style="text-align: right; color: #ffffff;">Background</h3>
+    <label for="solid">Solid fill</label>
+    <input type="radio" id="solid" name="bckg" value=0 checked="checked"><br>    
+    <label for="pic">Static background</label>
+    <input type="radio" id="pic" name="bckg" value=1><br>    
+    <label for="movie">Moving background</label>
+    <input type="radio" id="movie" name="bckg" value=2><br>
+
+    <h3 style="text-align: right; color: #ffffff;">Bird</h3>
+    <label for="space">Spaceholder</label>
+    <input type="radio" id="space" name="bird" value=0 checked="checked"><br>    
+    <label for="draw">Draw</label>
+    <input type="radio" id="draw" name="bird" value=1><br>    
+    <label for="image">Image</label>
+    <input type="radio" id="image" name="bird" value=2><br>
+    <label for="animated">Animated</label>
+    <input type="radio" id="animated" name="bird" value=3><br>
+
+    <h3 style="text-align: right; color: #ffffff;">Column</h3>
+    <label for="draw">Draw</label>
+    <input type="radio" id="draw" name="column" value=0 checked="checked"><br>    
+    <label for="pic">Image</label>
+    <input type="radio" id="pic" name="column" value=1><br>
+  </form>
+</div>
+<div id="column2">
+  <h1 style="color: #ffffff;">Flappy Bird</h1>
+  <canvas id="myCanvas" width="400" height="400"></canvas>
+</div>
+<div id="column3">
+  <h1>A simple game to practice programming</h1>
+  <ul>
+    <li>Simple game structure</li>
+    <li>Frame rate management</li>
+    <li>Event handlers for mouse and key to control game character</li>
+    <li>Interaction between HTML and JS</li>
+    <li>Media load in manager</li>
+    <li>2D draw and images</li>
+    <li>Collision detection</li>
+    <li>Infinite scrolling background</li>
+    <li>Simple animation - Blast effect and moving wings</li>
+    <li>Ambient sound and sound effects</li>
+  </ul>
+  
+</div>
+  <script src="Flappy_bird.js"></script>
+</body>
+</html>
