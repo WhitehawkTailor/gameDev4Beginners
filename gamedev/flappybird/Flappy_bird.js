@@ -71,8 +71,14 @@ function doKeyDown(e)
 function doSetting()
 {
   //if formerly was 0 then play
-  if(soundVersion==0 && document.forms.setup.sound.value==1)audioAmbient.play();
-  if(soundVersion==1 && document.forms.setup.sound.value==0)audioAmbient.pause();
+  try
+  {
+    if(soundVersion==0 && document.forms.setup.sound.value==1)audioAmbient.play();
+    if(soundVersion==1 && document.forms.setup.sound.value==0)audioAmbient.pause();      
+  } catch (error)
+  {
+    console.log("doSetting audio is not ready");
+  }
 
   soundVersion = document.forms.setup.sound.value;
   bckgVersion = document.forms.setup.bckg.value;
@@ -131,8 +137,20 @@ Draws the game area and objects
       drawPipe();  
       printScore();    
       //draw blast
+      try{
       c.drawImage(explPic,(collisionPhase%16)*expW, 0, expW, 70, bird.x, bird.y, expW, 70);
+    }
+      catch(err)
+      {
+        console.log("Err:" + err 
+        + " img complete:" + explPic.complete 
+        + " img width:" + explPic.width
+        + " img height:" + explPic.height
+        + " expW:" + expW
+        + " collisionPhase:"+collisionPhase);
+      }
 
+      
       //measure collision time
       collisionTimer++;
       if(collisionTimer>120)
@@ -515,6 +533,8 @@ function drawPipe()
 
     if(mediaCount.image == 0 && mediaCount.audio==0)
     {
+      //calculate frame size, when pic has been loaded in
+      expW = explPic.width/16;
       startGame();
     }
   }
@@ -575,6 +595,7 @@ const explPic = new Image();
 explPic.src = "pic/xplosev2.png"; //contains 16 frames in size 68x70 pixel
 addMedia(explPic);
 var collisionPhase=0;
+//width of one frame
 var expW = explPic.width/16; //width of one frame
 var collisionTimer=0;
 
