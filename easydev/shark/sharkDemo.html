@@ -7,9 +7,13 @@ Simple graphics demo using many pictures to fake 3D rendering
 GFX was stolen from a scratch program: https://scratch.mit.edu/projects/39220780/
 But it used a stolen GFX too from http://www.sharkbreak.com/index.html
 
-This scratch sprite is a zipped file that contains multiple svg files as layers.
+The origin scratch sprite is a zipped file that contains multiple svg files as layers.
 The sprite has a json descriptor file that tells the order of the images and
 the center point of the images.
+
+In my version the pic folder contains all the slices of the 3D structure as SVG image from the ZIP file.
+The number in the name specifies the order of the slice.
+Position information is in the source code as an array inside the MAIN section.
 -->
 
 
@@ -127,6 +131,7 @@ function bouncing()
 function gameLoop()
 {
     if(!isLoaded)return;    
+	
     //Bouncing effect if does nothing too much time
     timeCount++;
     if(timeCount == timeWait)//set bouncing effect
