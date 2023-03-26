@@ -2,7 +2,8 @@
 This is a course for begginers in development. Currently the language is Hungarian only.
 <p>
 Tehát ez egy rövid bevezető programozói kurzus kezdők részére.
-Haladástól függően 3-4 alkalom és alkalmanként minimum 2 óra, de inkább több.
+Haladástól függően 3-4 alkalom és alkalmanként 2-3 óra.
+Ezalatt elkészítesz egy Flappy Bird játékot és elsajátítod a programozási alapokat.
 </p>
 A kurzus két részre osztható:
 <ol>
